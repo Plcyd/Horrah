@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.placyd.horrah.ClosingTimeReceiver;
 
 import java.util.Calendar;
 
@@ -46,5 +45,3 @@ public class Horrah extends Application {
         );
     }
 }
-
-//
