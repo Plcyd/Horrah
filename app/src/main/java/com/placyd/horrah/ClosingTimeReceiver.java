@@ -52,3 +52,5 @@ public class ClosingTimeReceiver extends BroadcastReceiver {
         manager.notify(1001, builder.build());
     }
 }
+
+//Haha
