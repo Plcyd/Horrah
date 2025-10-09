@@ -1,15 +1,26 @@
 package com.placyd.horrah;
 
-import android.app.Application;
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-
+import android.os.Build;
+import android.os.BatteryManager;
+import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Random;
 
 public class Horrah extends Application {
+
+    private final String[] quotes = {
+            "Finish strong, Bro!",
+            "Pack up your stuff, but keep smiling!",
+            "Almost there, make your day count!",
+            "DepEd NCR closing time soon!"
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -37,11 +48,25 @@ public class Horrah extends Application {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
 
-        alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY,
-                pendingIntent
-        );
+        Log.d("Horrah", "Next closing alarm scheduled at: " + calendar.getTime());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
+    }
+
+    public static boolean isBatteryOkay(Context context) {
+        BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+        if (bm != null) {
+            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) >= 10;
+        }
+        return true;
+    }
+
+    public String getRandomQuote() {
+        Random rand = new Random();
+        return quotes[rand.nextInt(quotes.length)];
     }
 }

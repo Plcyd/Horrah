@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_rozi"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:background="@android:color/transparent">
+
+    <ImageView
+        android:id="@+id/rozi_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/rozii"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:id="@+id/clock_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="--:--:--"
+        android:textSize="22sp"
+        android:textColor="#896790"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/aller" />
+
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MM/DD/YYYY"
+        android:textSize="14sp"
+        android:textColor="#896790"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/aller" />
+
+</LinearLayout>
