@@ -14,12 +14,15 @@ import java.util.Random;
 
 public class Horrah extends Application {
 
+    // AWESOME ADDITION: Expanded quotes with local traffic flavor!
     private final String[] quotes = {
             "Finish strong, Bro!",
             "Pack up your stuff, but keep smiling!",
             "Almost there, make your day count!",
             "DepEd NCR closing time soon!",
-            "Rozi loves you bro!"
+            "Rozi loves you bro!",
+            "Beat that Quezon City rush hour traffic, let's go!",
+            "Time to hit EDSA, pack it up!"
     };
 
     @Override
@@ -30,7 +33,7 @@ public class Horrah extends Application {
     }
 
     /**
-     * Schedules the closing time alarm for 5:00 PM on the next weekday.
+     * Schedules the closing time alarm for 6:00 PM on the next weekday.
      * This logic is critical for the app's core functionality.
      */
     private void scheduleClosingTime(Context context) {
@@ -58,11 +61,11 @@ public class Horrah extends Application {
 
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 17); // 5 PM
+        calendar.set(Calendar.HOUR_OF_DAY, 18); // 6 PM setup
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
 
-        // If 5:00 PM has already passed today, set the alarm for the next day.
+        // If 6:00 PM has already passed today, set the alarm for the next day.
         if (System.currentTimeMillis() >= calendar.getTimeInMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
@@ -70,6 +73,11 @@ public class Horrah extends Application {
         // Skip Saturday and Sunday
         while (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
                 calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        // AWESOME LOGIC ADDITION: Skip Tuesday to perfectly match your ClosingTimeReceiver logic!
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
 
@@ -119,5 +127,45 @@ public class Horrah extends Application {
     public String getRandomQuote() {
         Random rand = new Random();
         return quotes[rand.nextInt(quotes.length)];
+    }
+
+    // ==========================================
+    // AWESOME NEW LOGIC ADDED BELOW
+    // ==========================================
+
+    /**
+     * Call this from your main Activity to prompt the user to allow Exact Alarms on Android 12+.
+     * Essential so the 6 PM alarm fires exactly on the dot.
+     */
+    public void requestExactAlarmPermission(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                Log.d("Horrah", "Launching exact alarm permission settings.");
+            }
+        }
+    }
+
+    /**
+     * Dynamic quote generator that checks the day of the week and battery level.
+     * Call this instead of getRandomQuote() for more situational awareness!
+     */
+    public String getDynamicClosingQuote(Context context) {
+        Calendar calendar = Calendar.getInstance();
+
+        // Friday hype!
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+            return "TGIF, Bro! Time to log off and spend the weekend with Rozi!";
+        }
+
+        // Low battery warning
+        if (!isBatteryOkay(context)) {
+            return "Your battery is under 10%, Bro! Pack up before your phone dies!";
+        }
+
+        return getRandomQuote();
     }
 }
