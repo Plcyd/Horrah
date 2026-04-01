@@ -2,7 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions: POST_NOTIFICATIONS is for API 33+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- FIX 1: Added both exact alarm permissions to prevent the SecurityException crash
+         on modern Android versions (API 31+ and API 33+). -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- FIX: Added <queries> block for Android 11+ to declare intent to interact with
+         the specific external package (Project Hyacinth). This is required for security
+         and visibility when launching cross-app components. -->
+    <queries>
+        <package android:name="com.placyd.projecthyacinth" />
+    </queries>
+
     <application
         android:name=".Horrah"
         android:allowBackup="true"
@@ -15,7 +31,59 @@
         android:theme="@style/Theme.Horrah"
         tools:targetApi="31">
 
-        <receiver android:name=".ClosingTimeReceiver" />
+        <!-- FullscreenActivity: Main launcher, exported, and using fullscreen theme -->
+        <activity
+            android:name=".FullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:label="@string/title_activity_fullscreen"
+            android:theme="@style/Theme.Horrah.Fullscreen">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Placeholder Activity to test the implicit intent launch mechanism. -->
+        <activity
+            android:name=".HyacinthLauncherActivity"
+            android:exported="true"
+            android:label="Hyacinth Launcher">
+            <intent-filter>
+                <action android:name="com.placyd.horrah.ACTION_SHOW_HYACINTH_COUNTDOWN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Closing Time Receiver -->
+        <receiver android:name=".ClosingTimeReceiver"
+            android:exported="false" />
+
+        <!-- Boot Receiver (enabled and exported for system broadcasts) -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- RoziWidget: Registered as an App Widget Provider -->
+        <receiver
+            android:name=".RoziWidget"
+            android:exported="true"
+            android:label="@string/rozi_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <!-- FIX: Must point to the widget info XML file (res/xml/widget_rozi_info.xml), not the layout file. -->
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@layout/widget_rozi" />
+        </receiver>
 
     </application>
 
